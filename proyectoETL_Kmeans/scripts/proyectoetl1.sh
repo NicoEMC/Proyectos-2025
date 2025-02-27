@@ -21,7 +21,7 @@ git clone https://github.com/NicoEMC/Proyectos-2025.git
 cd Proyectos-2025/proyectoETL_Kmeans
 
 # Subir archivos de datos al bucket
-gsutil cp ~/Proyectos-2025/proyectoETL_Kmeans/dataflow_python_examples/*.csv gs://$BUCKET_NAME/data_files/
+gsutil cp ~/Proyectos-2025/proyectoETL_Kmeans/dataflow_python/*.csv gs://$BUCKET_NAME/data_files/
 
 # Instalar dependencias
 sudo apt-get install python3-distutils -y
@@ -30,7 +30,7 @@ pip install numpy
 pip install apache-beam[gcp]==2.24.0
 
 # Ejecutar ETL en Dataflow
-python dataflow_python_examples/data_transformation.py \
+python dataflow_python/data_transformation.py \
   --project=$PROJECT_ID \
   --region=$REGION \
   --runner=DataflowRunner \
