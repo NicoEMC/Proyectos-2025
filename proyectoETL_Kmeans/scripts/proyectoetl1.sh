@@ -7,7 +7,7 @@ set -e
 export PROJECT_ID=$(gcloud config get-value project)
 export REGION="us-central1"
 export BUCKET_NAME="${PROJECT_ID}-dataflow"
-export PROJECT_DIR="$HOME/proyectoETL_Kmeans"
+export PROJECT_DIR="$HOME/Proyectos-2025/proyectoETL_Kmeans"
 
 # Habilitar APIs necesarias
 echo "Habilitando APIs necesarias..."
@@ -65,8 +65,15 @@ sleep 5
 echo "Ejecutando modelo de clustering..."
 python ../dataflow_python/data_clustering.py
 
+# Verificar y crear dataset en BigQuery si no existe
+echo "Verificando si el dataset de BigQuery existe..."
+bq --project_id=$PROJECT_ID ls $DATASET_NAME >/dev/null 2>&1 || bq --project_id=$PROJECT_ID mk --dataset $DATASET_NAME
+
+
 # Subir resultados a Cloud Storage y BigQuery
 echo "Subiendo resultados a Cloud Storage y BigQuery..."
+export BASE_DIR="$HOME/Proyectos-2025/proyectoETL_Kmeans"
+export DATA_DIR="$BASE_DIR/dataflow_python"
 python ../dataflow_python/data_upload.py
 
 echo "ETL completado con éxito."
