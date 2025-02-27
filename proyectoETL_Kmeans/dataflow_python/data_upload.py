@@ -36,7 +36,7 @@ def upload_to_bigquery(source_file):
 # Subir datos procesados
 def upload_data():
     fecha = datetime.date.today().strftime("%d-%m-%Y")
-    output_file = f"clustered_data_{fecha}.csv"
+    output_file = f"Proyectos-2025/proyectoETL_Kmeans/dataflow_python/clustered_data_{fecha}.csv"
 
     upload_to_gcs(output_file)
     upload_to_bigquery(output_file)
