@@ -20,6 +20,9 @@ gcloud storage buckets create gs://$BUCKET_NAME --location=$REGION || echo "El b
 git clone https://github.com/NicoEMC/Proyectos-2025.git
 cd Proyectos-2025/proyectoETL_Kmeans
 
+# Generar datos antes de copiarlos
+python dataflow_python/data_generation.py 
+
 # Subir archivos de datos al bucket
 gsutil cp dataflow_python/*.csv gs://$BUCKET_NAME/data_files/
 
