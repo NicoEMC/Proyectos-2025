@@ -21,22 +21,6 @@ rm -rf Proyectos-2025
 git clone https://github.com/NicoEMC/Proyectos-2025.git
 cd Proyectos-2025/proyectoETL_Kmeans
 
-# Subir archivos de datos al bucket
-# Esperar a que el CSV sea generado antes de continuar
-echo "⏳ Esperando la generación del archivo CSV..."
-CSV_FILE="proyectoETL_Kmeans/dataflow_python/data_$(date +%d-%m-%Y).csv"
-
-while [ ! -f "$CSV_FILE" ]; do
-    sleep 2
-    echo "⏳ Esperando..."
-done
-
-echo "✅ Archivo CSV encontrado: $CSV_FILE"
-
-# Subir archivos de datos al bucket
-gsutil cp proyectoETL_Kmeans/dataflow_python/*.csv gs://$BUCKET_NAME/data_files/
-
-
 # Instalar dependencias necesarias
 echo "📦 Instalando dependencias..."
 pip install --upgrade pip setuptools wheel cython
@@ -48,6 +32,22 @@ pip install --no-cache-dir --force-reinstall apache-beam[gcp]==2.48.0 || pip ins
 echo "▶️ Ejecutando generación de datos..."
 python dataflow_python/data_generation.py
 
+# Esperar a que el CSV sea generado antes de continuar
+echo "⏳ Esperando la generación del archivo CSV..."
+CSV_FILE="dataflow_python/data_$(date +%d-%m-%Y).csv"
+
+while [ ! -f "$CSV_FILE" ]; do
+    sleep 2
+    echo "⏳ Esperando..."
+done
+
+echo "✅ Archivo CSV encontrado: $CSV_FILE"
+
+# Subir archivos de datos al bucket
+echo "📂 Subiendo archivos CSV al bucket..."
+gsutil cp dataflow_python/*.csv gs://$BUCKET_NAME/data_files/
+
+# Ejecutar transformación de datos en Dataflow
 echo "▶️ Ejecutando transformación de datos en Dataflow..."
 python dataflow_python/data_transformation.py \
   --project=$PROJECT_ID \

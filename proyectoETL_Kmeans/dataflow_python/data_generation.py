@@ -3,6 +3,10 @@ import pandas as pd
 import datetime
 import os
 
+# Obtener ruta del script actual
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
 # Generar número de identificador único (9 dígitos)
 def generar_identificador(numero_identificador):
     while True:
@@ -30,9 +34,9 @@ def generar_random_data(num_samples=100):
 def guardar_csv():
     df = generar_random_data()
     fecha = datetime.date.today().strftime("%d-%m-%Y")
-    output_path = f"data_{fecha}.csv"
+    output_path = os.path.join(SCRIPT_DIR, f"data_{fecha}.csv")
     df.to_csv(output_path, index=False)
-    print(f"Archivo CSV guardado: {output_path}")
-
+    print(f"✅ Archivo CSV guardado: {output_path}")
+    
 if __name__ == "__main__":
     guardar_csv()
