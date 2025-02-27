@@ -2,19 +2,24 @@ import os
 import datetime
 from google.cloud import storage, bigquery
 
-# Configuración
-PROJECT_ID = "tu-proyecto-id"
-BUCKET_NAME = f"{PROJECT_ID}-bucket"
-DATASET_NAME = "flujo_cluster"
-TABLE_NAME = "resultados"
+# 🔹 Leer configuración desde variables de entorno
+PROJECT_ID = os.getenv("PROJECT_ID", "tu-proyecto-id")
+BUCKET_NAME = os.getenv("BUCKET_NAME", f"{PROJECT_ID}-dataflow")
+DATASET_NAME = os.getenv("DATASET_NAME", "flujo_cluster")
+TABLE_NAME = os.getenv("TABLE_NAME", "resultados")
+
+# 🔹 Directorio base de trabajo (evita rutas fijas)
+BASE_DIR = os.getenv("BASE_DIR", os.getcwd())
+DATA_DIR = os.path.join(BASE_DIR, "dataflow_python")
 
 # Función para subir a Cloud Storage
 def upload_to_gcs(source_file):
     client = storage.Client()
     bucket = client.bucket(BUCKET_NAME)
-    blob = bucket.blob(source_file)
+    blob = bucket.blob(os.path.basename(source_file))  # ✅ Subir solo el archivo, no la ruta completa
     blob.upload_from_filename(source_file)
-    print(f"Archivo subido a GCS: gs://{BUCKET_NAME}/{source_file}")
+    print(f"✅ Archivo subido a GCS: gs://{BUCKET_NAME}/{os.path.basename(source_file)}")
+
 
 # Función para subir a BigQuery
 def upload_to_bigquery(source_file):
@@ -36,7 +41,11 @@ def upload_to_bigquery(source_file):
 # Subir datos procesados
 def upload_data():
     fecha = datetime.date.today().strftime("%d-%m-%Y")
-    output_file = f"Proyectos-2025/proyectoETL_Kmeans/dataflow_python/clustered_data_{fecha}.csv"
+    output_file = os.path.join(DATA_DIR, f"clustered_data_{fecha}.csv")  # ✅ Evita rutas absolutas
+
+    if not os.path.exists(output_file):
+        print(f"❌ Error: No se encontró el archivo {output_file}")
+        return
 
     upload_to_gcs(output_file)
     upload_to_bigquery(output_file)
