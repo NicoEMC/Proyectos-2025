@@ -7,7 +7,6 @@ set -e
 export PROJECT_ID=$(gcloud config get-value project)
 export REGION="us-central1"
 export BUCKET_NAME="${PROJECT_ID}-dataflow"
-export REPO_URL="https://github.com/NicoEMC/Proyectos-2025.git"
 export PROJECT_DIR="$HOME/proyectoETL_Kmeans"
 
 # Habilitar APIs necesarias
@@ -21,14 +20,11 @@ gcloud services enable dataflow.googleapis.com \
 echo "Creando bucket en Cloud Storage..."
 gcloud storage buckets create gs://$BUCKET_NAME --location=$REGION || echo "El bucket ya existe"
 
-# Clonar el repositorio desde GitHub
-echo "Clonando el repositorio..."
-rm -rf $PROJECT_DIR
-git clone --depth 1 --filter=blob:none --sparse $REPO_URL
+# Moverse al directorio del proyecto (ya descargado previamente)
 cd $PROJECT_DIR
 
-# Crear entorno virtual
-echo "Creando entorno virtual..."
+# Crear y activar entorno virtual
+echo "Creando y activando entorno virtual..."
 rm -rf venv
 python3 -m venv venv
 source venv/bin/activate
@@ -40,18 +36,21 @@ pip install --upgrade numpy pandas scikit-learn
 pip install --no-cache-dir --force-reinstall apache-beam[gcp]==2.48.0 || pip install --no-cache-dir apache-beam[gcp]==2.45.0
 pip install google-cloud-storage google-cloud-bigquery
 
+# Moverse a la carpeta de scripts si es necesario
+cd scripts
+
 # Ejecutar generación de datos
 echo "Ejecutando generación de datos..."
-python dataflow_python/data_generation.py
+python ../dataflow_python/data_generation.py
 sleep 5
 
 # Subir archivos generados a Cloud Storage
 echo "Subiendo archivos CSV a Cloud Storage..."
-gsutil cp dataflow_python/data_*.csv gs://$BUCKET_NAME/data_files/
+gsutil cp ../dataflow_python/data_*.csv gs://$BUCKET_NAME/data_files/
 
 # Ejecutar transformación de datos en Dataflow
 echo "Ejecutando transformación de datos en Dataflow..."
-python dataflow_python/data_transformation.py \
+python ../dataflow_python/data_transformation.py \
   --project=$PROJECT_ID \
   --region=$REGION \
   --runner=DataflowRunner \
@@ -64,10 +63,10 @@ sleep 5
 
 # Ejecutar modelo de clustering K-Means
 echo "Ejecutando modelo de clustering..."
-python dataflow_python/data_clustering.py
+python ../dataflow_python/data_clustering.py
 
 # Subir resultados a Cloud Storage y BigQuery
 echo "Subiendo resultados a Cloud Storage y BigQuery..."
-python dataflow_python/data_upload.py
+python ../dataflow_python/data_upload.py
 
 echo "ETL completado con éxito."
