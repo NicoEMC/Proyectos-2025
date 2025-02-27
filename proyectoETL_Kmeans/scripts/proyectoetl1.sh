@@ -36,8 +36,9 @@ source venv/bin/activate
 # Instalar dependencias necesarias
 echo "Instalando dependencias..."
 pip install --upgrade pip setuptools wheel cython
-pip install --upgrade numpy pandas
+pip install --upgrade numpy pandas scikit-learn
 pip install --no-cache-dir --force-reinstall apache-beam[gcp]==2.48.0 || pip install --no-cache-dir apache-beam[gcp]==2.45.0
+pip install google-cloud-storage google-cloud-bigquery
 
 # Ejecutar generación de datos
 echo "Ejecutando generación de datos..."

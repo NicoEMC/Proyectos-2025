@@ -1,0 +1,7 @@
+numpy
+pandas
+scikit-learn
+cython
+apache-beam[gcp]==2.48.0
+google-cloud-storage
+google-cloud-bigquery
