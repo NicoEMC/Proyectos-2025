@@ -22,15 +22,27 @@ git clone https://github.com/NicoEMC/Proyectos-2025.git
 cd Proyectos-2025/proyectoETL_Kmeans
 
 # Subir archivos de datos al bucket
-echo "📂 Subiendo archivos CSV al bucket..."
-gsutil cp dataflow_python/*.csv gs://$BUCKET_NAME/data_files/ || echo "⚠️ No se encontraron archivos CSV, revisa la generación."
+# Esperar a que el CSV sea generado antes de continuar
+echo "⏳ Esperando la generación del archivo CSV..."
+CSV_FILE="proyectoETL_Kmeans/dataflow_python/data_$(date +%d-%m-%Y).csv"
+
+while [ ! -f "$CSV_FILE" ]; do
+    sleep 2
+    echo "⏳ Esperando..."
+done
+
+echo "✅ Archivo CSV encontrado: $CSV_FILE"
+
+# Subir archivos de datos al bucket
+gsutil cp proyectoETL_Kmeans/dataflow_python/*.csv gs://$BUCKET_NAME/data_files/
+
 
 # Instalar dependencias necesarias
 echo "📦 Instalando dependencias..."
 pip install --upgrade pip setuptools wheel cython
 pip install --upgrade numpy
 pip install pandas
-pip install apache-beam[gcp]==2.48.0
+pip install --no-cache-dir --force-reinstall apache-beam[gcp]==2.48.0 || pip install --no-cache-dir apache-beam[gcp]==2.45.0
 
 # Ejecutar scripts del ETL en Google Cloud
 echo "▶️ Ejecutando generación de datos..."
