@@ -2,8 +2,8 @@
 
 Info del proyecto Iniciado el 25-02-2025 a las 2 am
 
-    proyectoETL/
-    │── dataflow_python_examples/
+    proyectoETL_Kmeans/
+    │── dataflow_python/
     │   ├── data_generation.py  # Generar datos
     │   ├── data_transformation.py  # Transformaciones logarítmicas y limpieza
     │   ├── data_clustering.py  # Aplicación de K-Means
@@ -35,7 +35,7 @@ Info del proyecto Iniciado el 25-02-2025 a las 2 am
 3.- Selecciona el nuevo proyecto en la parte superior de la consola o con el comando:
 
     gcloud config set project proyectoetlkmeans
-    
+
     
 #### Habilitar Servicios Necesarios
 Para ejecutar el ETL en Google Cloud, habilita los siguientes servicios:
